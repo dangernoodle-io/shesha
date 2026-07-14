@@ -3,7 +3,7 @@ package hooks
 import (
 	"io"
 
-	"github.com/dangernoodle-io/mcpkit/jsonutil"
+	"github.com/dangernoodle-io/shesha/jsonutil"
 )
 
 // Response is the fail-open, event-agnostic result a Handler returns. The

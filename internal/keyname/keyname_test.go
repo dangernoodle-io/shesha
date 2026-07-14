@@ -3,7 +3,7 @@ package keyname_test
 import (
 	"testing"
 
-	"github.com/dangernoodle-io/mcpkit/internal/keyname"
+	"github.com/dangernoodle-io/shesha/internal/keyname"
 	"github.com/stretchr/testify/assert"
 )
 

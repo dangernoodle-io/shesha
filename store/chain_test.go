@@ -6,10 +6,10 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/dangernoodle-io/mcpkit/store"
-	"github.com/dangernoodle-io/mcpkit/store/defaults"
-	"github.com/dangernoodle-io/mcpkit/store/env"
-	"github.com/dangernoodle-io/mcpkit/store/xdgfile"
+	"github.com/dangernoodle-io/shesha/store"
+	"github.com/dangernoodle-io/shesha/store/defaults"
+	"github.com/dangernoodle-io/shesha/store/env"
+	"github.com/dangernoodle-io/shesha/store/xdgfile"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

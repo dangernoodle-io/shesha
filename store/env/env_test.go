@@ -5,8 +5,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/dangernoodle-io/mcpkit/store"
-	"github.com/dangernoodle-io/mcpkit/store/env"
+	"github.com/dangernoodle-io/shesha/store"
+	"github.com/dangernoodle-io/shesha/store/env"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

@@ -1,8 +1,8 @@
 # examples/server
 
-Command `example-mcp` demonstrates assembling mcpkit's standard command set:
+Command `example-mcp` demonstrates assembling shesha's standard command set:
 
-- A minimal `*mcpkit.App` — the Claude Code host adapter plus one trivial
+- A minimal `*shesha.App` — the Claude Code host adapter plus one trivial
   "ping" tool.
 - A `server` command (`cli.ServerCmd`) that serves stdio by default and
   switches to streamable-HTTP via `--http <addr>` (`--stateless` for

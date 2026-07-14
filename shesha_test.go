@@ -1,4 +1,4 @@
-package mcpkit_test
+package shesha_test
 
 import (
 	"context"
@@ -8,10 +8,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dangernoodle-io/mcpkit"
-	"github.com/dangernoodle-io/mcpkit/host/generic"
-	"github.com/dangernoodle-io/mcpkit/mcpx"
-	"github.com/dangernoodle-io/mcpkit/testkit"
+	"github.com/dangernoodle-io/shesha"
+	"github.com/dangernoodle-io/shesha/host/generic"
+	"github.com/dangernoodle-io/shesha/mcpx"
+	"github.com/dangernoodle-io/shesha/testkit"
 	"github.com/stretchr/testify/require"
 )
 
@@ -25,11 +25,11 @@ type helloOut struct {
 
 type helloCap struct{}
 
-func (helloCap) Attach(r *mcpkit.Registrar) error {
-	mcpkit.AddTool(r, &mcpx.Tool{
+func (helloCap) Attach(r *shesha.Registrar) error {
+	shesha.AddTool(r, &mcpx.Tool{
 		Name:        "hello",
 		Description: "greets the caller by name",
-	}, mcpkit.ReadOnly, func(_ context.Context, _ *mcpx.CallToolRequest, in helloIn) (*mcpx.CallToolResult, helloOut, error) {
+	}, shesha.ReadOnly, func(_ context.Context, _ *mcpx.CallToolRequest, in helloIn) (*mcpx.CallToolResult, helloOut, error) {
 		name := in.Name
 		if name == "" {
 			name = "world"
@@ -43,25 +43,25 @@ func (helloCap) Attach(r *mcpkit.Registrar) error {
 // work together: compose an App, list its tools, call one, and decode the
 // result.
 func TestEndToEnd(t *testing.T) {
-	app, err := mcpkit.New(mcpkit.Info{Name: "e2e", Version: "0.0.1"}, generic.New(), helloCap{})
+	app, err := shesha.New(shesha.Info{Name: "e2e", Version: "0.0.1"}, generic.New(), helloCap{})
 	require.NoError(t, err)
 
 	h := testkit.New(t, app)
 
 	testkit.AssertToolSet(t, h, "hello")
 
-	res, err := h.CallTool(context.Background(), "hello", map[string]any{"name": "mcpkit"})
+	res, err := h.CallTool(context.Background(), "hello", map[string]any{"name": "shesha"})
 	require.NoError(t, err)
 	require.False(t, res.IsError)
 
 	out := testkit.DecodeToolResult[helloOut](t, res)
-	require.Equal(t, "hello, mcpkit!", out.Greeting)
+	require.Equal(t, "hello, shesha!", out.Greeting)
 }
 
 // TestNewNilHost proves New rejects a nil host adapter rather than panicking
 // later.
 func TestNewNilHost(t *testing.T) {
-	_, err := mcpkit.New(mcpkit.Info{Name: "e2e", Version: "0.0.1"}, nil)
+	_, err := shesha.New(shesha.Info{Name: "e2e", Version: "0.0.1"}, nil)
 	require.Error(t, err)
 }
 
@@ -70,7 +70,7 @@ func TestNewNilHost(t *testing.T) {
 // call round trip identically to the zero-value (default) path exercised by
 // TestEndToEnd.
 func TestKeepAliveThreadsToServer(t *testing.T) {
-	app, err := mcpkit.New(mcpkit.Info{Name: "keepalive", Version: "0.0.1", KeepAlive: 50 * time.Millisecond}, generic.New(), helloCap{})
+	app, err := shesha.New(shesha.Info{Name: "keepalive", Version: "0.0.1", KeepAlive: 50 * time.Millisecond}, generic.New(), helloCap{})
 	require.NoError(t, err)
 
 	h := testkit.New(t, app)
@@ -89,7 +89,7 @@ func TestKeepAliveThreadsToServer(t *testing.T) {
 // preserves the prior no-keepalive behavior: a fresh App still composes and
 // serves normally.
 func TestKeepAliveZeroDisabled(t *testing.T) {
-	app, err := mcpkit.New(mcpkit.Info{Name: "no-keepalive", Version: "0.0.1"}, generic.New(), helloCap{})
+	app, err := shesha.New(shesha.Info{Name: "no-keepalive", Version: "0.0.1"}, generic.New(), helloCap{})
 	require.NoError(t, err)
 
 	h := testkit.New(t, app)
@@ -105,11 +105,11 @@ type panicOut struct {
 
 type panicCap struct{}
 
-func (panicCap) Attach(r *mcpkit.Registrar) error {
-	mcpkit.AddTool(r, &mcpx.Tool{
+func (panicCap) Attach(r *shesha.Registrar) error {
+	shesha.AddTool(r, &mcpx.Tool{
 		Name:        "panics",
 		Description: "always panics",
-	}, mcpkit.ReadOnly, func(_ context.Context, _ *mcpx.CallToolRequest, _ panicIn) (*mcpx.CallToolResult, panicOut, error) {
+	}, shesha.ReadOnly, func(_ context.Context, _ *mcpx.CallToolRequest, _ panicIn) (*mcpx.CallToolResult, panicOut, error) {
 		panic("kaboom")
 	})
 	return nil
@@ -119,7 +119,7 @@ func (panicCap) Attach(r *mcpkit.Registrar) error {
 // chokepoint converts a panicking handler into an IsError tool result
 // (naming the tool and the panic value) rather than crashing the process.
 func TestAddToolRecoversPanic(t *testing.T) {
-	app, err := mcpkit.New(mcpkit.Info{Name: "panic-e2e", Version: "0.0.1"}, generic.New(), panicCap{})
+	app, err := shesha.New(shesha.Info{Name: "panic-e2e", Version: "0.0.1"}, generic.New(), panicCap{})
 	require.NoError(t, err)
 
 	h := testkit.New(t, app)
@@ -141,24 +141,24 @@ func TestAddToolRecoversPanic(t *testing.T) {
 // transparent when the handler does not panic: a normal handler's result is
 // returned unchanged.
 func TestAddToolTransparentOnHappyPath(t *testing.T) {
-	app, err := mcpkit.New(mcpkit.Info{Name: "happy-e2e", Version: "0.0.1"}, generic.New(), helloCap{})
+	app, err := shesha.New(shesha.Info{Name: "happy-e2e", Version: "0.0.1"}, generic.New(), helloCap{})
 	require.NoError(t, err)
 
 	h := testkit.New(t, app)
 
-	res, err := h.CallTool(context.Background(), "hello", map[string]any{"name": "mcpkit"})
+	res, err := h.CallTool(context.Background(), "hello", map[string]any{"name": "shesha"})
 	require.NoError(t, err)
 	require.False(t, res.IsError)
 
 	out := testkit.DecodeToolResult[helloOut](t, res)
-	require.Equal(t, "hello, mcpkit!", out.Greeting)
+	require.Equal(t, "hello, shesha!", out.Greeting)
 }
 
 // TestNewWithInstructions proves Info.Instructions composes through New
 // without error; the wire-level assertion that the string reaches the
 // client lives in mcpx (the sole seam over go-sdk's InitializeResult).
 func TestNewWithInstructions(t *testing.T) {
-	app, err := mcpkit.New(mcpkit.Info{Name: "instructed", Version: "0.0.1", Instructions: "guide"}, generic.New(), helloCap{})
+	app, err := shesha.New(shesha.Info{Name: "instructed", Version: "0.0.1", Instructions: "guide"}, generic.New(), helloCap{})
 	require.NoError(t, err)
 	require.NotNil(t, app)
 }
@@ -171,15 +171,15 @@ type annotatedOut struct {
 
 type annotatedCap struct{}
 
-func (annotatedCap) Attach(r *mcpkit.Registrar) error {
-	mcpkit.AddTool(r, &mcpx.Tool{
+func (annotatedCap) Attach(r *shesha.Registrar) error {
+	shesha.AddTool(r, &mcpx.Tool{
 		Name:        "annotated",
 		Description: "carries tool annotations",
 		Annotations: &mcpx.ToolAnnotations{
 			ReadOnlyHint:    true,
 			DestructiveHint: mcpx.BoolPtr(true),
 		},
-	}, mcpkit.ReadOnly, func(_ context.Context, _ *mcpx.CallToolRequest, _ annotatedIn) (*mcpx.CallToolResult, annotatedOut, error) {
+	}, shesha.ReadOnly, func(_ context.Context, _ *mcpx.CallToolRequest, _ annotatedIn) (*mcpx.CallToolResult, annotatedOut, error) {
 		return nil, annotatedOut{OK: true}, nil
 	})
 	return nil
@@ -190,7 +190,7 @@ func (annotatedCap) Attach(r *mcpkit.Registrar) error {
 // required by the consumer) carries those annotations through tools/list —
 // the path ouroboros's cutover will rely on.
 func TestToolAnnotationsRoundTrip(t *testing.T) {
-	app, err := mcpkit.New(mcpkit.Info{Name: "annotated-e2e", Version: "0.0.1"}, generic.New(), annotatedCap{})
+	app, err := shesha.New(shesha.Info{Name: "annotated-e2e", Version: "0.0.1"}, generic.New(), annotatedCap{})
 	require.NoError(t, err)
 
 	h := testkit.New(t, app)
@@ -215,7 +215,7 @@ func TestToolAnnotationsRoundTrip(t *testing.T) {
 // text/event-stream mention in the body. Asserting that exact behavior
 // (rather than just a non-zero status) catches a broken/no-op delegate.
 func TestAppHTTPHandler(t *testing.T) {
-	app, err := mcpkit.New(mcpkit.Info{Name: "http-e2e", Version: "0.0.1"}, generic.New(), helloCap{})
+	app, err := shesha.New(shesha.Info{Name: "http-e2e", Version: "0.0.1"}, generic.New(), helloCap{})
 	require.NoError(t, err)
 
 	h := app.HTTPHandler()
@@ -236,13 +236,13 @@ type riskOut struct{}
 // Annotations so AddTool must derive it from risk via mcpx.RiskAnnotations.
 type riskCap struct{}
 
-func (riskCap) Attach(r *mcpkit.Registrar) error {
+func (riskCap) Attach(r *shesha.Registrar) error {
 	handler := func(_ context.Context, _ *mcpx.CallToolRequest, _ riskIn) (*mcpx.CallToolResult, riskOut, error) {
 		return nil, riskOut{}, nil
 	}
-	mcpkit.AddTool(r, &mcpx.Tool{Name: "risk-readonly", Description: "d"}, mcpkit.ReadOnly, handler)
-	mcpkit.AddTool(r, &mcpx.Tool{Name: "risk-write", Description: "d"}, mcpkit.Write, handler)
-	mcpkit.AddTool(r, &mcpx.Tool{Name: "risk-destructive", Description: "d"}, mcpkit.Destructive, handler)
+	shesha.AddTool(r, &mcpx.Tool{Name: "risk-readonly", Description: "d"}, shesha.ReadOnly, handler)
+	shesha.AddTool(r, &mcpx.Tool{Name: "risk-write", Description: "d"}, shesha.Write, handler)
+	shesha.AddTool(r, &mcpx.Tool{Name: "risk-destructive", Description: "d"}, shesha.Destructive, handler)
 	return nil
 }
 
@@ -251,7 +251,7 @@ func (riskCap) Attach(r *mcpkit.Registrar) error {
 // t.Annotations nil: ReadOnlyHint tracks Risk == ReadOnly, and
 // DestructiveHint tracks Risk == Destructive (Write gets neither hint set).
 func TestAddToolRiskAutoAnnotation(t *testing.T) {
-	app, err := mcpkit.New(mcpkit.Info{Name: "risk-e2e", Version: "0.0.1"}, generic.New(), riskCap{})
+	app, err := shesha.New(shesha.Info{Name: "risk-e2e", Version: "0.0.1"}, generic.New(), riskCap{})
 	require.NoError(t, err)
 
 	h := testkit.New(t, app)
@@ -288,7 +288,7 @@ func TestAddToolRiskAutoAnnotation(t *testing.T) {
 // perspective: a tool registered via AddTool before the first Connect is
 // fully advertised (tools/list) and callable once a session exists.
 func TestDeferredRegistrationAdvertisesAfterConnect(t *testing.T) {
-	app, err := mcpkit.New(mcpkit.Info{Name: "deferred-e2e", Version: "0.0.1"}, generic.New(), helloCap{})
+	app, err := shesha.New(shesha.Info{Name: "deferred-e2e", Version: "0.0.1"}, generic.New(), helloCap{})
 	require.NoError(t, err)
 
 	h := testkit.New(t, app)
@@ -302,7 +302,7 @@ func TestDeferredRegistrationAdvertisesAfterConnect(t *testing.T) {
 // proving finalize's first run is what registered it and the second run
 // was a no-op rather than a duplicate-registration panic.
 func TestAppConnectIdempotentAcrossSessions(t *testing.T) {
-	app, err := mcpkit.New(mcpkit.Info{Name: "reconnect-e2e", Version: "0.0.1"}, generic.New(), helloCap{})
+	app, err := shesha.New(shesha.Info{Name: "reconnect-e2e", Version: "0.0.1"}, generic.New(), helloCap{})
 	require.NoError(t, err)
 
 	h1 := testkit.New(t, app)

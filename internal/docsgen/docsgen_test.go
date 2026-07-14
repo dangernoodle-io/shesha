@@ -189,14 +189,14 @@ func TestDiscoverDirs_ExcludesRootAndSkipDirs(t *testing.T) {
 }
 
 func TestDefaultWikiBase(t *testing.T) {
-	assert.Equal(t, "https://github.com/dangernoodle-io/mcpkit/wiki", defaultWikiBase("github.com/dangernoodle-io/mcpkit"))
+	assert.Equal(t, "https://github.com/dangernoodle-io/shesha/wiki", defaultWikiBase("github.com/dangernoodle-io/shesha"))
 	assert.Equal(t, "", defaultWikiBase("example.com/sample"))
 }
 
 func TestPageName(t *testing.T) {
 	assert.Equal(t, "Sample", pageName("example.com/sample", "example.com/sample"))
 	assert.Equal(t, "Sub", pageName("example.com/sample/sub", "example.com/sample"))
-	assert.Equal(t, "Host-Generic", pageName("github.com/dangernoodle-io/mcpkit/host/generic", "github.com/dangernoodle-io/mcpkit"))
+	assert.Equal(t, "Host-Generic", pageName("github.com/dangernoodle-io/shesha/host/generic", "github.com/dangernoodle-io/shesha"))
 }
 
 func TestReadModulePath_NoModuleDirective(t *testing.T) {

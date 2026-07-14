@@ -7,9 +7,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/dangernoodle-io/mcpkit"
-	"github.com/dangernoodle-io/mcpkit/host/generic"
-	"github.com/dangernoodle-io/mcpkit/testkit"
+	"github.com/dangernoodle-io/shesha"
+	"github.com/dangernoodle-io/shesha/host/generic"
+	"github.com/dangernoodle-io/shesha/testkit"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -79,7 +79,7 @@ func TestNewRootCmd_BareInvocationShowsHelp(t *testing.T) {
 // transport) — exercised independently of newRootCmd/ServerCmd, which never
 // actually calls the tool.
 func TestPingCap_Attach(t *testing.T) {
-	app, err := mcpkit.New(mcpkit.Info{Name: "ping-test", Version: "0.0.0"}, generic.New(), pingCap{})
+	app, err := shesha.New(shesha.Info{Name: "ping-test", Version: "0.0.0"}, generic.New(), pingCap{})
 	require.NoError(t, err)
 
 	h := testkit.New(t, app)

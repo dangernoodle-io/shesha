@@ -4,22 +4,22 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/dangernoodle-io/mcpkit/identity"
+	"github.com/dangernoodle-io/shesha/identity"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestEnv_Set(t *testing.T) {
-	t.Setenv("MCPKIT_TEST_ENV_SET", "from-env")
+	t.Setenv("SHESHA_TEST_ENV_SET", "from-env")
 
-	src := identity.Env("MCPKIT_TEST_ENV_SET")
+	src := identity.Env("SHESHA_TEST_ENV_SET")
 
 	assert.Equal(t, "from-env", src())
 }
 
 func TestEnv_Unset(t *testing.T) {
-	t.Setenv("MCPKIT_TEST_ENV_UNSET", "")
+	t.Setenv("SHESHA_TEST_ENV_UNSET", "")
 
-	src := identity.Env("MCPKIT_TEST_ENV_UNSET")
+	src := identity.Env("SHESHA_TEST_ENV_UNSET")
 
 	assert.Empty(t, src())
 }

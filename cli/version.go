@@ -3,12 +3,12 @@ package cli
 import (
 	"fmt"
 
-	"github.com/dangernoodle-io/mcpkit"
+	"github.com/dangernoodle-io/shesha"
 	"github.com/spf13/cobra"
 )
 
 // VersionCmd builds a `version` command printing "<Name> <Version>".
-func VersionCmd(info mcpkit.Info) *cobra.Command {
+func VersionCmd(info shesha.Info) *cobra.Command {
 	return &cobra.Command{
 		Use:   "version",
 		Short: "Print the server name and version",

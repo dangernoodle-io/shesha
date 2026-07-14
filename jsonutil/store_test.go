@@ -5,8 +5,8 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/dangernoodle-io/mcpkit/jsonutil"
-	"github.com/dangernoodle-io/mcpkit/store/defaults"
+	"github.com/dangernoodle-io/shesha/jsonutil"
+	"github.com/dangernoodle-io/shesha/store/defaults"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

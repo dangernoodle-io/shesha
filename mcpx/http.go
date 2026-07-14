@@ -38,7 +38,7 @@ func WithJSONResponse(jsonResponse bool) HTTPOption {
 }
 
 // HTTPHandler returns a bare, path-agnostic http.Handler serving s over the
-// MCP streamable-HTTP transport. mcpkit imposes no route: the consumer
+// MCP streamable-HTTP transport. shesha imposes no route: the consumer
 // mounts it wherever it wants (any path, root, or under a subtree), or does
 // not mount it at all. Calling this is entirely opt-in.
 func (s *Server) HTTPHandler(opts ...HTTPOption) http.Handler {

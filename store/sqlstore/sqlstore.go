@@ -1,6 +1,6 @@
 // Package sqlstore provides a store.Store backed by a SQL key/value table
 // via the stdlib database/sql interface. It takes a caller-provided *sql.DB
-// and never opens or owns a connection — so mcpkit takes no SQL-driver
+// and never opens or owns a connection — so shesha takes no SQL-driver
 // dependency; the consumer brings its own driver and owns lifecycle/pragmas.
 // It targets SQLite-compatible dialects (`?` placeholders, INSERT OR
 // REPLACE); tested with modernc.org/sqlite. The adapter does NOT create or
@@ -15,7 +15,7 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/dangernoodle-io/mcpkit/store"
+	"github.com/dangernoodle-io/shesha/store"
 )
 
 // validTableName matches a valid, unquoted SQL identifier: it must start

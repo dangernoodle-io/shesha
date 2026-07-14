@@ -8,7 +8,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dangernoodle-io/mcpkit/httpx"
+	"github.com/dangernoodle-io/shesha/httpx"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

@@ -1,4 +1,4 @@
-module github.com/dangernoodle-io/mcpkit
+module github.com/dangernoodle-io/shesha
 
 go 1.26
 

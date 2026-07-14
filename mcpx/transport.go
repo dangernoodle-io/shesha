@@ -2,7 +2,7 @@ package mcpx
 
 import "github.com/modelcontextprotocol/go-sdk/mcp"
 
-// Transport is mcpkit's swappable protocol-transport seam. Only mcpx
+// Transport is shesha's swappable protocol-transport seam. Only mcpx
 // constructs or unwraps a Transport, so an HTTP implementation (MC-5) can be
 // added later without breaking callers outside this package.
 type Transport interface {

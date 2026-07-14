@@ -1,4 +1,4 @@
-// Command example-mcp demonstrates assembling mcpkit's standard command
+// Command example-mcp demonstrates assembling shesha's standard command
 // set: a stdio/HTTP-selectable server command (MC-31) plus the Claude Code
 // host's `claude hooks`/`claude statusline` subtrees, mounted onto one
 // cobra root via cli.MountProviders (MC-30's unified mount). It closes the
@@ -12,12 +12,12 @@ import (
 	"io"
 	"os"
 
-	"github.com/dangernoodle-io/mcpkit"
-	"github.com/dangernoodle-io/mcpkit/cli"
-	"github.com/dangernoodle-io/mcpkit/host/claudecode"
-	"github.com/dangernoodle-io/mcpkit/host/claudecode/hooks"
-	"github.com/dangernoodle-io/mcpkit/host/claudecode/statusline"
-	"github.com/dangernoodle-io/mcpkit/mcpx"
+	"github.com/dangernoodle-io/shesha"
+	"github.com/dangernoodle-io/shesha/cli"
+	"github.com/dangernoodle-io/shesha/host/claudecode"
+	"github.com/dangernoodle-io/shesha/host/claudecode/hooks"
+	"github.com/dangernoodle-io/shesha/host/claudecode/statusline"
+	"github.com/dangernoodle-io/shesha/mcpx"
 	"github.com/spf13/cobra"
 )
 
@@ -29,11 +29,11 @@ type pingOut struct {
 
 type pingCap struct{}
 
-func (pingCap) Attach(r *mcpkit.Registrar) error {
-	mcpkit.AddTool(r, &mcpx.Tool{
+func (pingCap) Attach(r *shesha.Registrar) error {
+	shesha.AddTool(r, &mcpx.Tool{
 		Name:        "ping",
 		Description: "replies with pong",
-	}, mcpkit.ReadOnly, func(_ context.Context, _ *mcpx.CallToolRequest, _ pingIn) (*mcpx.CallToolResult, pingOut, error) {
+	}, shesha.ReadOnly, func(_ context.Context, _ *mcpx.CallToolRequest, _ pingIn) (*mcpx.CallToolResult, pingOut, error) {
 		return nil, pingOut{Message: "pong"}, nil
 	})
 	return nil
@@ -58,18 +58,18 @@ func newStatuslineProvider() statusline.StatuslineProviderFunc {
 	}
 }
 
-// newRootCmd assembles the example's cobra root: a minimal *mcpkit.App (one
+// newRootCmd assembles the example's cobra root: a minimal *shesha.App (one
 // "ping" tool) mounted under `server` (stdio by default, `--http`/
 // `--stateless` per MC-31), plus the Claude Code host's `claude` namespace
 // (hooks + statusline) mounted via cli.MountProviders. Kept separate from
 // main so tests can exercise the command tree without starting a server.
 func newRootCmd() *cobra.Command {
-	app, err := mcpkit.New(mcpkit.Info{Name: "example-mcp", Version: "0.0.0-example"}, claudecode.New(), pingCap{})
+	app, err := shesha.New(shesha.Info{Name: "example-mcp", Version: "0.0.0-example"}, claudecode.New(), pingCap{})
 	must(err, "compose app")
 
 	root := &cobra.Command{
 		Use:   "example-mcp",
-		Short: "Example mcpkit server assembling the standard command set",
+		Short: "Example shesha server assembling the standard command set",
 	}
 
 	sc := cli.ServerCmd(cli.Server{App: app, HTTP: &cli.ServerHTTP{}})
@@ -86,13 +86,13 @@ func newRootCmd() *cobra.Command {
 	claudeProvider := claudecode.NewProvider(newHooksRegistry(), statusline.Command(newStatuslineProvider()))
 	must(cli.MountProviders(root, claudeProvider), "mount providers")
 
-	root.AddCommand(cli.VersionCmd(mcpkit.Info{Name: "example-mcp", Version: "0.0.0-example"}))
+	root.AddCommand(cli.VersionCmd(shesha.Info{Name: "example-mcp", Version: "0.0.0-example"}))
 
 	return root
 }
 
 // must panics on a non-nil err, wrapping it with msg. Both newRootCmd call
-// sites (mcpkit.New, cli.MountProviders) are literal, static calls that
+// sites (shesha.New, cli.MountProviders) are literal, static calls that
 // cannot fail from user input — a non-nil err here is a programming bug in
 // this file, not a runtime condition, so must panics rather than widening
 // newRootCmd's signature with an error return.

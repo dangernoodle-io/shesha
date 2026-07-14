@@ -5,7 +5,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/dangernoodle-io/mcpkit/jsonutil"
+	"github.com/dangernoodle-io/shesha/jsonutil"
 	"github.com/muesli/termenv"
 	"github.com/spf13/cobra"
 )

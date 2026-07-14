@@ -4,11 +4,11 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/dangernoodle-io/mcpkit/jsonutil"
+	"github.com/dangernoodle-io/shesha/jsonutil"
 )
 
 // WriteJSON writes v as an application/json response with the given status
-// code, encoded via jsonutil.Marshal for mcpkit's canonical, error-wrapped
+// code, encoded via jsonutil.Marshal for shesha's canonical, error-wrapped
 // encoding. v is marshaled to a buffer first, before anything is written to
 // w: if marshaling fails, WriteJSON returns the wrapped error and writes
 // nothing at all — no status, no headers, no partial body — so a marshal

@@ -1,11 +1,11 @@
-package mcpkit
+package shesha
 
 import (
 	"context"
 	"testing"
 
-	"github.com/dangernoodle-io/mcpkit/host/generic"
-	"github.com/dangernoodle-io/mcpkit/mcpx"
+	"github.com/dangernoodle-io/shesha/host/generic"
+	"github.com/dangernoodle-io/shesha/mcpx"
 	"github.com/stretchr/testify/require"
 )
 

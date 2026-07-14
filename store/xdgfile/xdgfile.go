@@ -9,8 +9,8 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/dangernoodle-io/mcpkit/store"
-	"github.com/dangernoodle-io/mcpkit/xdgpath"
+	"github.com/dangernoodle-io/shesha/store"
+	"github.com/dangernoodle-io/shesha/xdgpath"
 )
 
 // New returns a store.Store backed by app's config file name, resolved via

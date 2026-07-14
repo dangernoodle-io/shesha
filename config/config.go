@@ -11,7 +11,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/dangernoodle-io/mcpkit/xdgpath"
+	"github.com/dangernoodle-io/shesha/xdgpath"
 )
 
 // plan accumulates the options passed to Load before any layer is applied.

@@ -1,7 +1,7 @@
-// Package mcpkit is the composition root of a host-agnostic MCP server:
+// Package shesha is the composition root of a host-agnostic MCP server:
 // compile-time plugin-style composition of Capabilities over a pluggable
 // host.Adapter, built on the mcpx protocol seam.
-package mcpkit
+package shesha
 
 import (
 	"context"
@@ -10,8 +10,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/dangernoodle-io/mcpkit/host"
-	"github.com/dangernoodle-io/mcpkit/mcpx"
+	"github.com/dangernoodle-io/shesha/host"
+	"github.com/dangernoodle-io/shesha/mcpx"
 )
 
 // Info identifies the server being composed.
@@ -65,7 +65,7 @@ func (g groupOption) applyTool(m *toolMeta) {
 }
 
 // Group tags a tool with an arbitrary consumer-defined group name, recorded
-// in the registry's byGroup bookkeeping post-registration. mcpkit imposes no
+// in the registry's byGroup bookkeeping post-registration. shesha imposes no
 // meaning on the group string; a consumer's own gating (MC-44/MC-45) is what
 // interprets it.
 func Group(name string) ToolOption {
@@ -102,7 +102,7 @@ func ReadOnlyMode() GateOption {
 // Registrar is what a Capability's Attach method uses to register itself
 // against the underlying server and inspect the target host. Capabilities
 // register tools through the package-level AddTool, not against mcpx
-// directly, so mcpkit owns a single tool-registration chokepoint.
+// directly, so shesha owns a single tool-registration chokepoint.
 type Registrar struct {
 	server *mcpx.Server
 	host   host.Adapter
@@ -201,7 +201,7 @@ func (reg *registry) applyGate(opts ...GateOption) error {
 	defer reg.mu.Unlock()
 
 	if reg.started {
-		return fmt.Errorf("mcpkit: Gate must be called before Run/Connect/HTTPHandler")
+		return fmt.Errorf("shesha: Gate must be called before Run/Connect/HTTPHandler")
 	}
 
 	for _, opt := range opts {
@@ -217,7 +217,7 @@ func (reg *registry) blockGroups(groups ...string) error {
 	defer reg.mu.Unlock()
 
 	if reg.started {
-		return fmt.Errorf("mcpkit: BlockGroups must be called before Run/Connect/HTTPHandler")
+		return fmt.Errorf("shesha: BlockGroups must be called before Run/Connect/HTTPHandler")
 	}
 
 	if reg.gate.blockedGroups == nil {
@@ -240,7 +240,7 @@ func (reg *registry) blockTools(names ...string) error {
 	defer reg.mu.Unlock()
 
 	if reg.started {
-		return fmt.Errorf("mcpkit: BlockTools must be called before Run/Connect/HTTPHandler")
+		return fmt.Errorf("shesha: BlockTools must be called before Run/Connect/HTTPHandler")
 	}
 
 	if reg.gate.blockedTools == nil {
@@ -313,7 +313,7 @@ func (reg *registry) lockGroup(srv *mcpx.Server, group string) error {
 	defer reg.mu.Unlock()
 
 	if reg.gate.blockedGroups[group] {
-		return fmt.Errorf("mcpkit: group %q is hard-blocked by the startup gate; Lock has no effect", group)
+		return fmt.Errorf("shesha: group %q is hard-blocked by the startup gate; Lock has no effect", group)
 	}
 
 	if reg.locked == nil {
@@ -347,7 +347,7 @@ func (reg *registry) unlockGroup(srv *mcpx.Server, group string) error {
 	defer reg.mu.Unlock()
 
 	if reg.gate.blockedGroups[group] {
-		return fmt.Errorf("mcpkit: group %q is hard-blocked by the startup gate; Unlock has no effect", group)
+		return fmt.Errorf("shesha: group %q is hard-blocked by the startup gate; Unlock has no effect", group)
 	}
 
 	if !reg.locked[group] {
@@ -386,7 +386,7 @@ type App struct {
 // HTTPHandler calls finalize.
 func New(info Info, h host.Adapter, caps ...Capability) (*App, error) {
 	if h == nil {
-		return nil, fmt.Errorf("mcpkit: host adapter must not be nil")
+		return nil, fmt.Errorf("shesha: host adapter must not be nil")
 	}
 
 	srv := mcpx.NewServer(mcpx.Implementation{Name: info.Name, Version: info.Version}, info.Instructions, info.KeepAlive)
@@ -395,7 +395,7 @@ func New(info Info, h host.Adapter, caps ...Capability) (*App, error) {
 
 	for _, c := range caps {
 		if err := c.Attach(r); err != nil {
-			return nil, fmt.Errorf("mcpkit: attach capability: %w", err)
+			return nil, fmt.Errorf("shesha: attach capability: %w", err)
 		}
 	}
 
@@ -475,7 +475,7 @@ func (a *App) Connect(ctx context.Context, t mcpx.Transport) (*mcpx.Session, err
 }
 
 // HTTPHandler exposes the composed server over streamable-HTTP for the
-// consumer to mount. mcpkit is path-agnostic: the returned handler is bare
+// consumer to mount. shesha is path-agnostic: the returned handler is bare
 // and MCP-over-HTTP is entirely opt-in — the consumer decides whether and
 // where to mount it. finalize runs here too (not just Run/Connect) because
 // an HTTP-only consumer (see cli.ServerCmd's --http path and

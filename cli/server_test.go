@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dangernoodle-io/mcpkit"
-	"github.com/dangernoodle-io/mcpkit/mcpx"
+	"github.com/dangernoodle-io/shesha"
+	"github.com/dangernoodle-io/shesha/mcpx"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"github.com/stretchr/testify/assert"
@@ -18,7 +18,7 @@ import (
 )
 
 // fakeAdapter is a minimal host.Adapter backed by an in-memory transport, so
-// tests can build a real *mcpkit.App without a subprocess or real stdio.
+// tests can build a real *shesha.App without a subprocess or real stdio.
 type fakeAdapter struct {
 	t mcpx.Transport
 }
@@ -27,12 +27,12 @@ func (f fakeAdapter) Name() string { return "fake" }
 
 func (f fakeAdapter) Transport() mcpx.Transport { return f.t }
 
-func buildApp(t *testing.T) *mcpkit.App {
+func buildApp(t *testing.T) *shesha.App {
 	t.Helper()
 
 	serverT, _ := mcpx.InMemoryPair()
 
-	app, err := mcpkit.New(mcpkit.Info{Name: "acme", Version: "1.0.0"}, fakeAdapter{t: serverT})
+	app, err := shesha.New(shesha.Info{Name: "acme", Version: "1.0.0"}, fakeAdapter{t: serverT})
 	require.NoError(t, err)
 
 	return app
@@ -46,30 +46,30 @@ func readOnlyGateHandler(_ context.Context, _ *mcpx.CallToolRequest, _ struct{})
 // TestServerCmd_RunE_ReadOnlyFlagGatesTools to assert against.
 type readOnlyGateCap struct{}
 
-func (readOnlyGateCap) Attach(r *mcpkit.Registrar) error {
-	mcpkit.AddTool(r, &mcpx.Tool{Name: "ro", Description: "d"}, mcpkit.ReadOnly, readOnlyGateHandler)
-	mcpkit.AddTool(r, &mcpx.Tool{Name: "destructive", Description: "d"}, mcpkit.Destructive, readOnlyGateHandler)
+func (readOnlyGateCap) Attach(r *shesha.Registrar) error {
+	shesha.AddTool(r, &mcpx.Tool{Name: "ro", Description: "d"}, shesha.ReadOnly, readOnlyGateHandler)
+	shesha.AddTool(r, &mcpx.Tool{Name: "destructive", Description: "d"}, shesha.Destructive, readOnlyGateHandler)
 	return nil
 }
 
-// buildGatedApp builds an *mcpkit.App carrying readOnlyGateCap's two tools
+// buildGatedApp builds a *shesha.App carrying readOnlyGateCap's two tools
 // over a fakeAdapter, returning the app plus the client-side end of the
 // in-memory transport pair the app's host.Transport() (server-side) is
 // bound to, so a test can drive cmd.RunE's real s.App.Run path (not
 // App.Connect) and still list tools from the other end.
-func buildGatedApp(t *testing.T) (*mcpkit.App, mcpx.Transport) {
+func buildGatedApp(t *testing.T) (*shesha.App, mcpx.Transport) {
 	t.Helper()
 
 	serverT, clientT := mcpx.InMemoryPair()
 
-	app, err := mcpkit.New(mcpkit.Info{Name: "acme-gate", Version: "1.0.0"}, fakeAdapter{t: serverT}, readOnlyGateCap{})
+	app, err := shesha.New(shesha.Info{Name: "acme-gate", Version: "1.0.0"}, fakeAdapter{t: serverT}, readOnlyGateCap{})
 	require.NoError(t, err)
 
 	return app, clientT
 }
 
 // TestAppRun_ReturnsContextCanceledOnCancel is the probe the spec calls for:
-// confirms what mcpkit.App.Run (via mcpx -> go-sdk) actually returns when
+// confirms what shesha.App.Run (via mcpx -> go-sdk) actually returns when
 // ctx is cancelled, so runLifecycle's errors.Is(err, context.Canceled)
 // guard is verified load-bearing, not just belt-and-suspenders.
 func TestAppRun_ReturnsContextCanceledOnCancel(t *testing.T) {
@@ -627,7 +627,7 @@ func TestServerCmd_ReadOnlyFlagRegisteredUnconditionally(t *testing.T) {
 }
 
 // TestServerCmd_RunE_ReadOnlyFlagGatesTools proves --read-only reaches
-// App.Gate(mcpkit.ReadOnlyMode()) before the transport starts: driving the
+// App.Gate(shesha.ReadOnlyMode()) before the transport starts: driving the
 // real RunE with --read-only set, only the ReadOnly tool is advertised in
 // tools/list; the Destructive tool is never registered.
 func TestServerCmd_RunE_ReadOnlyFlagGatesTools(t *testing.T) {

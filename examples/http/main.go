@@ -1,6 +1,6 @@
-// Command http demonstrates serving an mcpkit App over streamable-HTTP as
+// Command http demonstrates serving a shesha App over streamable-HTTP as
 // one handler among the consumer's own on a single mux/server — proving
-// mcpkit's HTTPHandler is a bare, path-agnostic http.Handler and that
+// shesha's HTTPHandler is a bare, path-agnostic http.Handler and that
 // MCP-over-HTTP is entirely opt-in.
 package main
 
@@ -10,10 +10,10 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/dangernoodle-io/mcpkit"
-	"github.com/dangernoodle-io/mcpkit/host/generic"
-	"github.com/dangernoodle-io/mcpkit/httpx"
-	"github.com/dangernoodle-io/mcpkit/mcpx"
+	"github.com/dangernoodle-io/shesha"
+	"github.com/dangernoodle-io/shesha/host/generic"
+	"github.com/dangernoodle-io/shesha/httpx"
+	"github.com/dangernoodle-io/shesha/mcpx"
 )
 
 type helloIn struct {
@@ -26,11 +26,11 @@ type helloOut struct {
 
 type helloCap struct{}
 
-func (helloCap) Attach(r *mcpkit.Registrar) error {
-	mcpkit.AddTool(r, &mcpx.Tool{
+func (helloCap) Attach(r *shesha.Registrar) error {
+	shesha.AddTool(r, &mcpx.Tool{
 		Name:        "hello",
 		Description: "greets the caller by name",
-	}, mcpkit.ReadOnly, func(_ context.Context, _ *mcpx.CallToolRequest, in helloIn) (*mcpx.CallToolResult, helloOut, error) {
+	}, shesha.ReadOnly, func(_ context.Context, _ *mcpx.CallToolRequest, in helloIn) (*mcpx.CallToolResult, helloOut, error) {
 		name := in.Name
 		if name == "" {
 			name = "world"
@@ -42,9 +42,9 @@ func (helloCap) Attach(r *mcpkit.Registrar) error {
 
 // newMux builds the co-mount example: MCP as just one handler among the
 // consumer's own on a single mux, via httpx.NewMux.
-func newMux(app *mcpkit.App) *http.ServeMux {
+func newMux(app *shesha.App) *http.ServeMux {
 	// The mount path is the consumer's choice — "/mcp" here is illustrative,
-	// not required. mcpkit imposes no route, and calling HTTPHandler at all
+	// not required. shesha imposes no route, and calling HTTPHandler at all
 	// is opt-in: a server that never serves MCP over HTTP simply never calls it.
 	mux := httpx.NewMux("/mcp", app.HTTPHandler())
 	// The same mux/server can serve unrelated purposes alongside MCP.
@@ -56,7 +56,7 @@ func newMux(app *mcpkit.App) *http.ServeMux {
 }
 
 func main() {
-	app, err := mcpkit.New(mcpkit.Info{Name: "http-demo", Version: "0.0.1"}, generic.New(), helloCap{})
+	app, err := shesha.New(shesha.Info{Name: "http-demo", Version: "0.0.1"}, generic.New(), helloCap{})
 	if err != nil {
 		log.Fatalf("compose app: %v", err)
 	}

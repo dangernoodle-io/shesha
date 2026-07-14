@@ -3,10 +3,10 @@ package host_test
 import (
 	"testing"
 
-	"github.com/dangernoodle-io/mcpkit/host"
-	"github.com/dangernoodle-io/mcpkit/host/claudecode"
-	"github.com/dangernoodle-io/mcpkit/host/cursor"
-	"github.com/dangernoodle-io/mcpkit/host/generic"
+	"github.com/dangernoodle-io/shesha/host"
+	"github.com/dangernoodle-io/shesha/host/claudecode"
+	"github.com/dangernoodle-io/shesha/host/cursor"
+	"github.com/dangernoodle-io/shesha/host/generic"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

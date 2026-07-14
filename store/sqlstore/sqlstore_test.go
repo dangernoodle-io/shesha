@@ -8,10 +8,10 @@ import (
 	"io"
 	"testing"
 
-	"github.com/dangernoodle-io/mcpkit/jsonutil"
-	"github.com/dangernoodle-io/mcpkit/store"
-	"github.com/dangernoodle-io/mcpkit/store/defaults"
-	"github.com/dangernoodle-io/mcpkit/store/sqlstore"
+	"github.com/dangernoodle-io/shesha/jsonutil"
+	"github.com/dangernoodle-io/shesha/store"
+	"github.com/dangernoodle-io/shesha/store/defaults"
+	"github.com/dangernoodle-io/shesha/store/sqlstore"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
