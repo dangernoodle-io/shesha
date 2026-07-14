@@ -6,7 +6,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/dangernoodle-io/mcpkit/store"
+	"github.com/dangernoodle-io/shesha/store"
 )
 
 // New returns a store.Store backed by an in-memory copy of kv. A nil kv is

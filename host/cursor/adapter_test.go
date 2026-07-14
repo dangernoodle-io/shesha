@@ -3,9 +3,9 @@ package cursor_test
 import (
 	"testing"
 
-	"github.com/dangernoodle-io/mcpkit/host"
-	"github.com/dangernoodle-io/mcpkit/host/cursor"
-	"github.com/dangernoodle-io/mcpkit/mcpx"
+	"github.com/dangernoodle-io/shesha/host"
+	"github.com/dangernoodle-io/shesha/host/cursor"
+	"github.com/dangernoodle-io/shesha/mcpx"
 	"github.com/stretchr/testify/assert"
 )
 

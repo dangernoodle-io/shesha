@@ -1,4 +1,4 @@
-// Package hooks implements mcpkit's Claude Code hook-command adapter: typed
+// Package hooks implements shesha's Claude Code hook-command adapter: typed
 // per-event payloads, a fail-open Response union that marshals the correct
 // Claude Code hook-output JSON shape, and a builder-style Registry + cobra
 // command factory that turns registered handlers into a `hooks` command
@@ -10,7 +10,7 @@
 // decode or the registered Handler panics or returns an error: FailOpen
 // recovers a panic and swallows a returned error, logging either to stderr.
 // A hook must never block or fail the Claude Code session it's wired into
-// — "fail open", not "fail closed" (mirrors mcpkit.AddTool's panic-recover
+// — "fail open", not "fail closed" (mirrors shesha.AddTool's panic-recover
 // chokepoint on the tool-call side).
 //
 // # Response union

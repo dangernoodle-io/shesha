@@ -1,5 +1,5 @@
 // Package mcpx is the sole seam over github.com/modelcontextprotocol/go-sdk:
-// no other mcpkit package imports go-sdk directly. It stays deliberately
+// no other shesha package imports go-sdk directly. It stays deliberately
 // thin in phase 0, type-aliasing a handful of go-sdk types.
 //
 // MC-8: harden the aliases below into owned types once the surface stabilizes.

@@ -1,9 +1,9 @@
-// Package cli provides cobra.Command factories for mounting an *mcpkit.App
-// into a consumer's own root command. mcpkit does not own the root: the
+// Package cli provides cobra.Command factories for mounting a *shesha.App
+// into a consumer's own root command. shesha does not own the root: the
 // consumer builds its own cobra root and mounts ServerCmd (and, optionally,
 // VersionCmd) as subcommands of it.
 //
-// mcpkit owns transport selection, running the server, and graceful
+// shesha owns transport selection, running the server, and graceful
 // shutdown; the consumer extends the server command via Server.App plus the
 // OnStart/OnShutdown hooks, Flags, and Subcommands (arbitrary cobra
 // subtrees — see CommandProvider/MountProviders for the uniform mounting
@@ -23,8 +23,8 @@
 //
 // ServerCmd also always registers a `--read-only` bool flag (default
 // false), regardless of transport: passing --read-only calls
-// App.Gate(mcpkit.ReadOnlyMode()) before the transport starts, hard-blocking
-// every non-ReadOnly tool from ever being registered — mcpkit's one
+// App.Gate(shesha.ReadOnlyMode()) before the transport starts, hard-blocking
+// every non-ReadOnly tool from ever being registered — shesha's one
 // built-in risk-gating axis. --read-only, --http, and --stateless are all
 // reserved flag names: a Server.Flags registration of any of them collides
 // and pflag panics at command construction.
@@ -43,9 +43,9 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/dangernoodle-io/mcpkit"
-	"github.com/dangernoodle-io/mcpkit/httpx"
-	"github.com/dangernoodle-io/mcpkit/mcpx"
+	"github.com/dangernoodle-io/shesha"
+	"github.com/dangernoodle-io/shesha/httpx"
+	"github.com/dangernoodle-io/shesha/mcpx"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 )
@@ -53,7 +53,7 @@ import (
 // Server configures the command ServerCmd builds. Only App is required.
 type Server struct {
 	// App is the composed server to run. Required.
-	App *mcpkit.App
+	App *shesha.App
 
 	// Use is the command name. Defaults to "server".
 	Use string
@@ -143,7 +143,7 @@ func ServerCmd(s Server) *cobra.Command {
 
 			ro := readOnly || (s.ReadOnlyEnv != "" && envTruthy(os.Getenv(s.ReadOnlyEnv)))
 			if ro {
-				if err := s.App.Gate(mcpkit.ReadOnlyMode()); err != nil {
+				if err := s.App.Gate(shesha.ReadOnlyMode()); err != nil {
 					return err
 				}
 			}

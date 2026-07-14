@@ -2,8 +2,8 @@
 package cursor
 
 import (
-	"github.com/dangernoodle-io/mcpkit/host"
-	"github.com/dangernoodle-io/mcpkit/mcpx"
+	"github.com/dangernoodle-io/shesha/host"
+	"github.com/dangernoodle-io/shesha/mcpx"
 )
 
 type adapter struct{}

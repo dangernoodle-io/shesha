@@ -5,10 +5,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dangernoodle-io/mcpkit"
-	"github.com/dangernoodle-io/mcpkit/host/generic"
-	"github.com/dangernoodle-io/mcpkit/mcpx"
-	"github.com/dangernoodle-io/mcpkit/testkit"
+	"github.com/dangernoodle-io/shesha"
+	"github.com/dangernoodle-io/shesha/host/generic"
+	"github.com/dangernoodle-io/shesha/mcpx"
+	"github.com/dangernoodle-io/shesha/testkit"
 	"github.com/stretchr/testify/require"
 )
 
@@ -18,18 +18,18 @@ type pingOut struct {
 
 type pingCap struct{}
 
-func (pingCap) Attach(r *mcpkit.Registrar) error {
-	mcpkit.AddTool(r, &mcpx.Tool{
+func (pingCap) Attach(r *shesha.Registrar) error {
+	shesha.AddTool(r, &mcpx.Tool{
 		Name:        "ping",
 		Description: "replies pong",
-	}, mcpkit.ReadOnly, func(_ context.Context, _ *mcpx.CallToolRequest, _ struct{}) (*mcpx.CallToolResult, pingOut, error) {
+	}, shesha.ReadOnly, func(_ context.Context, _ *mcpx.CallToolRequest, _ struct{}) (*mcpx.CallToolResult, pingOut, error) {
 		return nil, pingOut{Reply: "pong"}, nil
 	})
 	return nil
 }
 
 func TestHarness(t *testing.T) {
-	app, err := mcpkit.New(mcpkit.Info{Name: "harness-test", Version: "0.0.1"}, generic.New(), pingCap{})
+	app, err := shesha.New(shesha.Info{Name: "harness-test", Version: "0.0.1"}, generic.New(), pingCap{})
 	require.NoError(t, err)
 
 	h := testkit.New(t, app)
@@ -50,11 +50,11 @@ type workOut struct {
 
 type workCap struct{}
 
-func (workCap) Attach(r *mcpkit.Registrar) error {
-	mcpkit.AddTool(r, &mcpx.Tool{
+func (workCap) Attach(r *shesha.Registrar) error {
+	shesha.AddTool(r, &mcpx.Tool{
 		Name:        "work",
 		Description: "emits a progress notification keyed to the caller's token, then completes",
-	}, mcpkit.ReadOnly, func(ctx context.Context, req *mcpx.CallToolRequest, _ struct{}) (*mcpx.CallToolResult, workOut, error) {
+	}, shesha.ReadOnly, func(ctx context.Context, req *mcpx.CallToolRequest, _ struct{}) (*mcpx.CallToolResult, workOut, error) {
 		if err := mcpx.NotifyProgress(ctx, req, "halfway", 50, 100); err != nil {
 			return nil, workOut{}, err
 		}
@@ -69,7 +69,7 @@ func (workCap) Attach(r *mcpkit.Registrar) error {
 // mcpx.NotifyProgress, reading it back off the request), and the harness's
 // OnProgress hook files it under that token for ProgressEvents to surface.
 func TestHarnessProgress(t *testing.T) {
-	app, err := mcpkit.New(mcpkit.Info{Name: "progress-test", Version: "0.0.1"}, generic.New(), workCap{})
+	app, err := shesha.New(shesha.Info{Name: "progress-test", Version: "0.0.1"}, generic.New(), workCap{})
 	require.NoError(t, err)
 
 	h := testkit.New(t, app)
@@ -102,7 +102,7 @@ func TestHarnessProgress(t *testing.T) {
 // false when no notifications/tools/list_changed notification arrives
 // within the timeout (nothing in this test triggers one).
 func TestHarnessToolListChanged_Timeout(t *testing.T) {
-	app, err := mcpkit.New(mcpkit.Info{Name: "no-change-test", Version: "0.0.1"}, generic.New(), pingCap{})
+	app, err := shesha.New(shesha.Info{Name: "no-change-test", Version: "0.0.1"}, generic.New(), pingCap{})
 	require.NoError(t, err)
 
 	h := testkit.New(t, app)
@@ -112,13 +112,13 @@ func TestHarnessToolListChanged_Timeout(t *testing.T) {
 
 type lockedToolCap struct{}
 
-func (lockedToolCap) Attach(r *mcpkit.Registrar) error {
-	mcpkit.AddTool(r, &mcpx.Tool{
+func (lockedToolCap) Attach(r *shesha.Registrar) error {
+	shesha.AddTool(r, &mcpx.Tool{
 		Name:        "locked-tool",
 		Description: "d",
-	}, mcpkit.ReadOnly, func(_ context.Context, _ *mcpx.CallToolRequest, _ struct{}) (*mcpx.CallToolResult, pingOut, error) {
+	}, shesha.ReadOnly, func(_ context.Context, _ *mcpx.CallToolRequest, _ struct{}) (*mcpx.CallToolResult, pingOut, error) {
 		return nil, pingOut{}, nil
-	}, mcpkit.Group("locked"))
+	}, shesha.Group("locked"))
 	return nil
 }
 
@@ -126,7 +126,7 @@ func (lockedToolCap) Attach(r *mcpkit.Registrar) error {
 // AssertToolListChanged wrapper) observe a real
 // notifications/tools/list_changed notification fired by a runtime Unlock.
 func TestHarnessToolListChanged_Signaled(t *testing.T) {
-	app, err := mcpkit.New(mcpkit.Info{Name: "list-changed-test", Version: "0.0.1"}, generic.New(), lockedToolCap{})
+	app, err := shesha.New(shesha.Info{Name: "list-changed-test", Version: "0.0.1"}, generic.New(), lockedToolCap{})
 	require.NoError(t, err)
 
 	require.NoError(t, app.Lock("locked"))

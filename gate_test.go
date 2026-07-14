@@ -1,13 +1,13 @@
-package mcpkit_test
+package shesha_test
 
 import (
 	"context"
 	"testing"
 
-	"github.com/dangernoodle-io/mcpkit"
-	"github.com/dangernoodle-io/mcpkit/host/generic"
-	"github.com/dangernoodle-io/mcpkit/mcpx"
-	"github.com/dangernoodle-io/mcpkit/testkit"
+	"github.com/dangernoodle-io/shesha"
+	"github.com/dangernoodle-io/shesha/host/generic"
+	"github.com/dangernoodle-io/shesha/mcpx"
+	"github.com/dangernoodle-io/shesha/testkit"
 	"github.com/stretchr/testify/require"
 )
 
@@ -22,10 +22,10 @@ func gateHandler(_ context.Context, _ *mcpx.CallToolRequest, _ gateIn) (*mcpx.Ca
 // riskGateCap registers one ungrouped tool per Risk value.
 type riskGateCap struct{}
 
-func (riskGateCap) Attach(r *mcpkit.Registrar) error {
-	mcpkit.AddTool(r, &mcpx.Tool{Name: "ro", Description: "d"}, mcpkit.ReadOnly, gateHandler)
-	mcpkit.AddTool(r, &mcpx.Tool{Name: "write", Description: "d"}, mcpkit.Write, gateHandler)
-	mcpkit.AddTool(r, &mcpx.Tool{Name: "destructive", Description: "d"}, mcpkit.Destructive, gateHandler)
+func (riskGateCap) Attach(r *shesha.Registrar) error {
+	shesha.AddTool(r, &mcpx.Tool{Name: "ro", Description: "d"}, shesha.ReadOnly, gateHandler)
+	shesha.AddTool(r, &mcpx.Tool{Name: "write", Description: "d"}, shesha.Write, gateHandler)
+	shesha.AddTool(r, &mcpx.Tool{Name: "destructive", Description: "d"}, shesha.Destructive, gateHandler)
 	return nil
 }
 
@@ -33,20 +33,20 @@ func (riskGateCap) Attach(r *mcpkit.Registrar) error {
 // group "y", and an ungrouped ReadOnly tool.
 type groupGateCap struct{}
 
-func (groupGateCap) Attach(r *mcpkit.Registrar) error {
-	mcpkit.AddTool(r, &mcpx.Tool{Name: "x-tool", Description: "d"}, mcpkit.ReadOnly, gateHandler, mcpkit.Group("x"))
-	mcpkit.AddTool(r, &mcpx.Tool{Name: "y-tool", Description: "d"}, mcpkit.ReadOnly, gateHandler, mcpkit.Group("y"))
-	mcpkit.AddTool(r, &mcpx.Tool{Name: "ungrouped", Description: "d"}, mcpkit.ReadOnly, gateHandler)
+func (groupGateCap) Attach(r *shesha.Registrar) error {
+	shesha.AddTool(r, &mcpx.Tool{Name: "x-tool", Description: "d"}, shesha.ReadOnly, gateHandler, shesha.Group("x"))
+	shesha.AddTool(r, &mcpx.Tool{Name: "y-tool", Description: "d"}, shesha.ReadOnly, gateHandler, shesha.Group("y"))
+	shesha.AddTool(r, &mcpx.Tool{Name: "ungrouped", Description: "d"}, shesha.ReadOnly, gateHandler)
 	return nil
 }
 
 // mixedGateCap combines the risk and group axes for the combined-gate test.
 type mixedGateCap struct{}
 
-func (mixedGateCap) Attach(r *mcpkit.Registrar) error {
-	mcpkit.AddTool(r, &mcpx.Tool{Name: "ro-x", Description: "d"}, mcpkit.ReadOnly, gateHandler, mcpkit.Group("x"))
-	mcpkit.AddTool(r, &mcpx.Tool{Name: "ro-y", Description: "d"}, mcpkit.ReadOnly, gateHandler, mcpkit.Group("y"))
-	mcpkit.AddTool(r, &mcpx.Tool{Name: "write-y", Description: "d"}, mcpkit.Write, gateHandler, mcpkit.Group("y"))
+func (mixedGateCap) Attach(r *shesha.Registrar) error {
+	shesha.AddTool(r, &mcpx.Tool{Name: "ro-x", Description: "d"}, shesha.ReadOnly, gateHandler, shesha.Group("x"))
+	shesha.AddTool(r, &mcpx.Tool{Name: "ro-y", Description: "d"}, shesha.ReadOnly, gateHandler, shesha.Group("y"))
+	shesha.AddTool(r, &mcpx.Tool{Name: "write-y", Description: "d"}, shesha.Write, gateHandler, shesha.Group("y"))
 	return nil
 }
 
@@ -54,10 +54,10 @@ func (mixedGateCap) Attach(r *mcpkit.Registrar) error {
 // every non-ReadOnly tool at startup: only the ReadOnly tool is advertised
 // in tools/list once the app connects.
 func TestGateReadOnlyModeBlocksNonReadOnly(t *testing.T) {
-	app, err := mcpkit.New(mcpkit.Info{Name: "gate-ro", Version: "0.0.1"}, generic.New(), riskGateCap{})
+	app, err := shesha.New(shesha.Info{Name: "gate-ro", Version: "0.0.1"}, generic.New(), riskGateCap{})
 	require.NoError(t, err)
 
-	require.NoError(t, app.Gate(mcpkit.ReadOnlyMode()))
+	require.NoError(t, app.Gate(shesha.ReadOnlyMode()))
 
 	h := testkit.New(t, app)
 	testkit.AssertToolSet(t, h, "ro")
@@ -67,7 +67,7 @@ func TestGateReadOnlyModeBlocksNonReadOnly(t *testing.T) {
 // tool tagged with a blocked group while leaving other groups/ungrouped
 // tools advertised.
 func TestBlockGroupsExcludesNamedGroup(t *testing.T) {
-	app, err := mcpkit.New(mcpkit.Info{Name: "gate-group", Version: "0.0.1"}, generic.New(), groupGateCap{})
+	app, err := shesha.New(shesha.Info{Name: "gate-group", Version: "0.0.1"}, generic.New(), groupGateCap{})
 	require.NoError(t, err)
 
 	require.NoError(t, app.BlockGroups("x"))
@@ -79,10 +79,10 @@ func TestBlockGroupsExcludesNamedGroup(t *testing.T) {
 // TestGateReadOnlyAndBlockGroupsCombine proves the risk axis and the group
 // axis intersect: a tool must pass both to be advertised.
 func TestGateReadOnlyAndBlockGroupsCombine(t *testing.T) {
-	app, err := mcpkit.New(mcpkit.Info{Name: "gate-combo", Version: "0.0.1"}, generic.New(), mixedGateCap{})
+	app, err := shesha.New(shesha.Info{Name: "gate-combo", Version: "0.0.1"}, generic.New(), mixedGateCap{})
 	require.NoError(t, err)
 
-	require.NoError(t, app.Gate(mcpkit.ReadOnlyMode()))
+	require.NoError(t, app.Gate(shesha.ReadOnlyMode()))
 	require.NoError(t, app.BlockGroups("y"))
 
 	h := testkit.New(t, app)
@@ -95,7 +95,7 @@ func TestGateReadOnlyAndBlockGroupsCombine(t *testing.T) {
 // TestNoGateAdvertisesEverything is a regression guard: an App that never
 // calls Gate/BlockGroups preserves MC-43's register-everything behavior.
 func TestNoGateAdvertisesEverything(t *testing.T) {
-	app, err := mcpkit.New(mcpkit.Info{Name: "gate-none", Version: "0.0.1"}, generic.New(), riskGateCap{})
+	app, err := shesha.New(shesha.Info{Name: "gate-none", Version: "0.0.1"}, generic.New(), riskGateCap{})
 	require.NoError(t, err)
 
 	h := testkit.New(t, app)
@@ -107,13 +107,13 @@ func TestNoGateAdvertisesEverything(t *testing.T) {
 // Connect) returns an error and does not change the already-registered
 // tool set.
 func TestGateAfterConnectErrors(t *testing.T) {
-	app, err := mcpkit.New(mcpkit.Info{Name: "gate-late", Version: "0.0.1"}, generic.New(), riskGateCap{})
+	app, err := shesha.New(shesha.Info{Name: "gate-late", Version: "0.0.1"}, generic.New(), riskGateCap{})
 	require.NoError(t, err)
 
 	h := testkit.New(t, app)
 	testkit.AssertToolSet(t, h, "ro", "write", "destructive")
 
-	require.Error(t, app.Gate(mcpkit.ReadOnlyMode()))
+	require.Error(t, app.Gate(shesha.ReadOnlyMode()))
 	require.Error(t, app.BlockGroups("whatever"))
 
 	// The already-registered set must be unchanged by the rejected calls.
@@ -124,16 +124,16 @@ func TestGateAfterConnectErrors(t *testing.T) {
 // MC-49 BlockTools tests.
 type namedToolCap struct{}
 
-func (namedToolCap) Attach(r *mcpkit.Registrar) error {
-	mcpkit.AddTool(r, &mcpx.Tool{Name: "x", Description: "d"}, mcpkit.ReadOnly, gateHandler)
-	mcpkit.AddTool(r, &mcpx.Tool{Name: "y", Description: "d"}, mcpkit.ReadOnly, gateHandler)
+func (namedToolCap) Attach(r *shesha.Registrar) error {
+	shesha.AddTool(r, &mcpx.Tool{Name: "x", Description: "d"}, shesha.ReadOnly, gateHandler)
+	shesha.AddTool(r, &mcpx.Tool{Name: "y", Description: "d"}, shesha.ReadOnly, gateHandler)
 	return nil
 }
 
 // TestBlockToolsExcludesNamedTool proves BlockTools hard-blocks a tool by
 // name while leaving other tools advertised.
 func TestBlockToolsExcludesNamedTool(t *testing.T) {
-	app, err := mcpkit.New(mcpkit.Info{Name: "block-tools", Version: "0.0.1"}, generic.New(), namedToolCap{})
+	app, err := shesha.New(shesha.Info{Name: "block-tools", Version: "0.0.1"}, generic.New(), namedToolCap{})
 	require.NoError(t, err)
 
 	require.NoError(t, app.BlockTools("x"))
@@ -147,7 +147,7 @@ func TestBlockToolsExcludesNamedTool(t *testing.T) {
 // TestBlockGroupsExcludesNamedGroup: it never registers, so a group
 // containing it never picks it up in byGroup either.
 func TestBlockToolsExcludesFromByGroup(t *testing.T) {
-	app, err := mcpkit.New(mcpkit.Info{Name: "block-tools-group", Version: "0.0.1"}, generic.New(), groupGateCap{})
+	app, err := shesha.New(shesha.Info{Name: "block-tools-group", Version: "0.0.1"}, generic.New(), groupGateCap{})
 	require.NoError(t, err)
 
 	require.NoError(t, app.BlockTools("x-tool"))
@@ -161,7 +161,7 @@ func TestBlockToolsExcludesFromByGroup(t *testing.T) {
 // name block is permanent, same invariant BlockGroups already gives at the
 // group level.
 func TestBlockToolsHardBlockWinsOverUnlock(t *testing.T) {
-	app, err := mcpkit.New(mcpkit.Info{Name: "block-tools-unlock", Version: "0.0.1"}, generic.New(), hwGroupCap{})
+	app, err := shesha.New(shesha.Info{Name: "block-tools-unlock", Version: "0.0.1"}, generic.New(), hwGroupCap{})
 	require.NoError(t, err)
 
 	require.NoError(t, app.BlockTools("hw-tool"))
@@ -178,7 +178,7 @@ func TestBlockToolsHardBlockWinsOverUnlock(t *testing.T) {
 // call after the App has already finalized registration returns the
 // documented error and does not change the already-registered tool set.
 func TestBlockToolsAfterConnectErrors(t *testing.T) {
-	app, err := mcpkit.New(mcpkit.Info{Name: "block-tools-late", Version: "0.0.1"}, generic.New(), namedToolCap{})
+	app, err := shesha.New(shesha.Info{Name: "block-tools-late", Version: "0.0.1"}, generic.New(), namedToolCap{})
 	require.NoError(t, err)
 
 	h := testkit.New(t, app)
@@ -193,10 +193,10 @@ func TestBlockToolsAfterConnectErrors(t *testing.T) {
 // axes (name, group, risk) compose: a tool blocked by any single axis stays
 // out, and a tool that clears all three still advertises.
 func TestBlockToolsCombinesWithBlockGroupsAndReadOnly(t *testing.T) {
-	app, err := mcpkit.New(mcpkit.Info{Name: "block-tools-combo", Version: "0.0.1"}, generic.New(), mixedGateCap{})
+	app, err := shesha.New(shesha.Info{Name: "block-tools-combo", Version: "0.0.1"}, generic.New(), mixedGateCap{})
 	require.NoError(t, err)
 
-	require.NoError(t, app.Gate(mcpkit.ReadOnlyMode()))
+	require.NoError(t, app.Gate(shesha.ReadOnlyMode()))
 	require.NoError(t, app.BlockGroups("y"))
 	require.NoError(t, app.BlockTools("ro-x"))
 

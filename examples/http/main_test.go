@@ -5,14 +5,14 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/dangernoodle-io/mcpkit"
-	"github.com/dangernoodle-io/mcpkit/host/generic"
+	"github.com/dangernoodle-io/shesha"
+	"github.com/dangernoodle-io/shesha/host/generic"
 	"github.com/stretchr/testify/require"
 )
 
-func newTestApp(t *testing.T) *mcpkit.App {
+func newTestApp(t *testing.T) *shesha.App {
 	t.Helper()
-	app, err := mcpkit.New(mcpkit.Info{Name: "http-demo-test", Version: "0.0.1"}, generic.New(), helloCap{})
+	app, err := shesha.New(shesha.Info{Name: "http-demo-test", Version: "0.0.1"}, generic.New(), helloCap{})
 	require.NoError(t, err)
 	return app
 }

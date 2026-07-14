@@ -5,7 +5,7 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/dangernoodle-io/mcpkit/store/defaults"
+	"github.com/dangernoodle-io/shesha/store/defaults"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

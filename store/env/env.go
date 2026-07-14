@@ -8,8 +8,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/dangernoodle-io/mcpkit/internal/keyname"
-	"github.com/dangernoodle-io/mcpkit/store"
+	"github.com/dangernoodle-io/shesha/internal/keyname"
+	"github.com/dangernoodle-io/shesha/store"
 )
 
 // Option configures a Source built by New.

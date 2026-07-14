@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/dangernoodle-io/mcpkit/store"
+	"github.com/dangernoodle-io/shesha/store"
 )
 
 // GetJSON reads key from s and JSON-decodes it into T. It returns

@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/dangernoodle-io/mcpkit/store/xdgfile"
+	"github.com/dangernoodle-io/shesha/store/xdgfile"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

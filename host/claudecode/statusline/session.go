@@ -1,6 +1,6 @@
 package statusline
 
-import "github.com/dangernoodle-io/mcpkit/identity"
+import "github.com/dangernoodle-io/shesha/identity"
 
 // Resolve resolves the session identity a statusline invocation should
 // filter its rendered data by, generalizing pogopin's BR-76 precedence to

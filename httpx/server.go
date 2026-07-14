@@ -17,7 +17,7 @@ const defaultShutdownTimeout = 10 * time.Second
 // NewMux returns a *http.ServeMux with mcpHandler mounted at mcpPath. The
 // consumer registers its own routes on the returned mux, so MCP-over-HTTP
 // is just one handler among the consumer's own on a single mux/server.
-// httpx never imports mcpkit/mcpx/go-sdk itself — mcpHandler is a bare
+// httpx never imports shesha/mcpx/go-sdk itself — mcpHandler is a bare
 // http.Handler the consumer builds (e.g. via App.HTTPHandler()).
 func NewMux(mcpPath string, mcpHandler http.Handler) *http.ServeMux {
 	mux := http.NewServeMux()

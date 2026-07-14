@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dangernoodle-io/mcpkit/testkit"
+	"github.com/dangernoodle-io/shesha/testkit"
 )
 
 // TestEventuallyContains_MissThenMatch deterministically exercises both

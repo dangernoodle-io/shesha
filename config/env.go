@@ -6,7 +6,7 @@ import (
 	"reflect"
 	"strconv"
 
-	"github.com/dangernoodle-io/mcpkit/internal/keyname"
+	"github.com/dangernoodle-io/shesha/internal/keyname"
 )
 
 // WithEnv overlays environment variables onto the current value: for each

@@ -1,12 +1,12 @@
-// Package host defines the seam mcpkit uses to adapt a server to a specific
+// Package host defines the seam shesha uses to adapt a server to a specific
 // MCP host (generic stdio, Claude Code, Cursor, ...). Subpackages provide
 // separable stub implementations so a consumer imports only the host it
 // targets.
 package host
 
-import "github.com/dangernoodle-io/mcpkit/mcpx"
+import "github.com/dangernoodle-io/shesha/mcpx"
 
-// Adapter binds mcpkit's composition root to a specific MCP host.
+// Adapter binds shesha's composition root to a specific MCP host.
 //
 // host/cursor and host/generic are minimal stdio stubs: they only satisfy
 // this interface and carry no host-specific behavior. The real Claude Code

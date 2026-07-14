@@ -26,7 +26,7 @@ docs: ## regenerate per-package READMEs
 docs-check: docs ## fail if generated READMEs drift
 	git diff --exit-code -- '**/README.md' ':(exclude)README.md'
 
-# seam-check enforces mcpkit's two import seams:
+# seam-check enforces shesha's two import seams:
 #   - go-sdk (modelcontextprotocol/go-sdk) may be imported only under mcpx/,
 #     the sole seam over the MCP protocol library (see mcpx/README.md).
 #   - cobra (spf13/cobra) may be imported only under cli/,

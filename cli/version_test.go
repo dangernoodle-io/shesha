@@ -4,14 +4,14 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/dangernoodle-io/mcpkit"
-	"github.com/dangernoodle-io/mcpkit/cli"
+	"github.com/dangernoodle-io/shesha"
+	"github.com/dangernoodle-io/shesha/cli"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestVersionCmd(t *testing.T) {
-	cmd := cli.VersionCmd(mcpkit.Info{Name: "acme", Version: "1.2.3"})
+	cmd := cli.VersionCmd(shesha.Info{Name: "acme", Version: "1.2.3"})
 
 	var out bytes.Buffer
 	cmd.SetOut(&out)

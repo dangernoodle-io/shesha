@@ -1,4 +1,4 @@
-// Package jsonutil provides mcpkit's canonical JSON encode/decode helpers:
+// Package jsonutil provides shesha's canonical JSON encode/decode helpers:
 // Marshal/Unmarshal wrapping encoding/json with consistent, context-rich
 // error messages, plus an Indent variant for human-readable output. Typed
 // GetJSON/SetJSON helpers layer this over the store.Store seam (MC-15), so

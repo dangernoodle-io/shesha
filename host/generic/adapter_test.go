@@ -3,9 +3,9 @@ package generic_test
 import (
 	"testing"
 
-	"github.com/dangernoodle-io/mcpkit/host"
-	"github.com/dangernoodle-io/mcpkit/host/generic"
-	"github.com/dangernoodle-io/mcpkit/mcpx"
+	"github.com/dangernoodle-io/shesha/host"
+	"github.com/dangernoodle-io/shesha/host/generic"
+	"github.com/dangernoodle-io/shesha/mcpx"
 	"github.com/stretchr/testify/assert"
 )
 

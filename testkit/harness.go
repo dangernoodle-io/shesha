@@ -1,5 +1,5 @@
-// Package testkit is mcpkit's shipped in-memory MCP test harness, built on
-// mcpx.InMemoryPair (no subprocess). It is used by mcpkit's own tests and is
+// Package testkit is shesha's shipped in-memory MCP test harness, built on
+// mcpx.InMemoryPair (no subprocess). It is used by shesha's own tests and is
 // intended for reuse by downstream consumers.
 package testkit
 
@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/dangernoodle-io/mcpkit"
-	"github.com/dangernoodle-io/mcpkit/mcpx"
+	"github.com/dangernoodle-io/shesha"
+	"github.com/dangernoodle-io/shesha/mcpx"
 	"github.com/stretchr/testify/require"
 )
 
@@ -22,7 +22,7 @@ type ProgressEvent struct {
 	Total    float64
 }
 
-// Harness wires an in-memory MCP client to an *mcpkit.App for testing.
+// Harness wires an in-memory MCP client to a *shesha.App for testing.
 type Harness struct {
 	t       testing.TB
 	session *mcpx.ClientSession
@@ -43,7 +43,7 @@ type Harness struct {
 // New composes app over an in-memory transport pair, connects a client, and
 // returns a ready Harness. The client is closed automatically via
 // t.Cleanup.
-func New(t testing.TB, app *mcpkit.App) *Harness {
+func New(t testing.TB, app *shesha.App) *Harness {
 	t.Helper()
 
 	ctx := context.Background()

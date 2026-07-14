@@ -19,7 +19,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/dangernoodle-io/mcpkit/internal/keyname"
+	"github.com/dangernoodle-io/shesha/internal/keyname"
 )
 
 // ConfigDir returns the resolved config directory for app.

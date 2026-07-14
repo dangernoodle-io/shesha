@@ -1,4 +1,4 @@
-// Package statusline implements mcpkit's Claude Code statusLine adapter: the
+// Package statusline implements shesha's Claude Code statusLine adapter: the
 // stdin payload contract, a session-identity resolver, a termenv-based
 // segment renderer, and a StatuslineProvider seam + cobra command factory
 // that together produce a `statusline` command a host adapter mounts (e.g.

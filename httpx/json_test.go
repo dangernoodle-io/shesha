@@ -5,8 +5,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/dangernoodle-io/mcpkit/httpx"
-	"github.com/dangernoodle-io/mcpkit/jsonutil"
+	"github.com/dangernoodle-io/shesha/httpx"
+	"github.com/dangernoodle-io/shesha/jsonutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

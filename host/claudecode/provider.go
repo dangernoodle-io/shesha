@@ -1,8 +1,8 @@
 package claudecode
 
 import (
-	"github.com/dangernoodle-io/mcpkit/cli"
-	"github.com/dangernoodle-io/mcpkit/host/claudecode/hooks"
+	"github.com/dangernoodle-io/shesha/cli"
+	"github.com/dangernoodle-io/shesha/host/claudecode/hooks"
 	"github.com/spf13/cobra"
 )
 
