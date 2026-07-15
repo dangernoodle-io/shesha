@@ -1,10 +1,11 @@
 # statusline
 
 Package statusline implements shesha's Claude Code statusLine adapter: the
-stdin payload contract, a session-identity resolver, a termenv-based
-segment renderer, and a StatuslineProvider seam + cobra command factory
-that together produce a `statusline` command a host adapter mounts (e.g.
-as `claude statusline`, see host/claudecode/provider.go).
+stdin payload contract, a session-identity resolver, a segment renderer
+built on the style seam (see style.Renderer), and a StatuslineProvider
+seam + cobra command factory that together produce a `statusline` command
+a host adapter mounts (e.g. as `claude statusline`, see
+host/claudecode/provider.go).
 
 # Fail-open contract
 
@@ -31,14 +32,15 @@ render nothing rather than fall back to an unfiltered/global view.
 
 A StatuslineProvider returns a []Segment — one styled chunk per unit of
 output, including any literal separators as their own plain Segment.
-Render is the single place that turns Segments into a line, applying
-termenv's profile-aware color degradation (TrueColor -> ANSI256 -> ANSI
--> Ascii) to each Segment's optional Color/Dim/Bold. A consumer that
-never sets Color (pogopin's plain segments) and one that always does
-(ouroboros's colored KB/backlog/priority segments) render through the
-exact same code path — Ascii/--plain/NO_COLOR collapses every Segment to
-its bare Text, matching pogopin's existing no-color output and
-ouroboros's --plain/OUROBOROS_NO_COLOR mode.
+Render is the single place that turns Segments into a line, delegating
+each Segment's optional Color/Dim/Bold to a style.Renderer's tier-aware
+color degradation (LevelTrueColor -> Level256 -> LevelBasic ->
+LevelNone). A consumer that never sets Color (pogopin's plain segments)
+and one that always does (ouroboros's colored KB/backlog/priority
+segments) render through the exact same code path —
+LevelNone/--plain/NO_COLOR collapses every Segment to its bare Text,
+matching pogopin's existing no-color output and ouroboros's
+--plain/OUROBOROS_NO_COLOR mode.
 
 # Implementing StatuslineProvider
 

@@ -126,8 +126,8 @@ func (r *renderer) Level() Level {
 // Render styles text under s, degrading to bare text at LevelNone.
 // Otherwise it builds the termenv style for the resolved profile: a
 // foreground color (when s.Fg is set), Faint (when s.Dim), and Bold (when
-// s.Bold) — the same shape as statusline's styleSegment, generalized
-// behind this seam.
+// s.Bold) — the same shape statusline's old termenv-based renderer used,
+// generalized behind this seam.
 func (r *renderer) Render(text string, s Style) string {
 	if r.level == LevelNone {
 		return text

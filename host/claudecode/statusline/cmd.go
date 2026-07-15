@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/dangernoodle-io/shesha/jsonutil"
-	"github.com/muesli/termenv"
+	"github.com/dangernoodle-io/shesha/style"
 	"github.com/spf13/cobra"
 )
 
@@ -14,8 +14,8 @@ import (
 type Option func(*options)
 
 type options struct {
-	appPrefix    string
-	forceProfile *termenv.Profile
+	appPrefix  string
+	forceLevel *style.Level
 }
 
 // WithAppPrefix sets the consumer's env-var prefix (e.g. "OUROBOROS",
@@ -26,15 +26,14 @@ func WithAppPrefix(prefix string) Option {
 	return func(o *options) { o.appPrefix = prefix }
 }
 
-// WithForceProfile overrides the auto-detected termenv color profile so a
-// consumer can force a color tier (e.g. termenv.ANSI) even when stdout is
-// not a TTY — Claude Code always pipes stdout, so auto-detection alone
-// yields termenv.Ascii and a colored-segment consumer (e.g. ouroboros)
-// would never get color. Omit it to keep auto-detection
-// (termenv.EnvColorProfile()). --plain still wins: it forces Ascii
-// regardless of this option.
-func WithForceProfile(p termenv.Profile) Option {
-	return func(o *options) { o.forceProfile = &p }
+// WithForceLevel overrides the auto-detected color capability tier so a
+// consumer can force a color tier (e.g. style.LevelBasic) even when stdout
+// is not a TTY — Claude Code always pipes stdout, so auto-detection alone
+// yields style.LevelNone and a colored-segment consumer (e.g. ouroboros)
+// would never get color. Omit it to keep auto-detection (style.Detect).
+// --plain still wins: it forces style.LevelNone regardless of this option.
+func WithForceLevel(l style.Level) Option {
+	return func(o *options) { o.forceLevel = &l }
 }
 
 // Command builds the `statusline` leaf: reads the Claude Code statusLine
@@ -81,12 +80,24 @@ func run(cmd *cobra.Command, provider StatuslineProvider, cfg options, plain boo
 		return nil
 	}
 
-	line := Render(segments, RenderOptions{Plain: plain, Profile: cfg.forceProfile})
+	w := cmd.OutOrStdout()
+
+	var renderer style.Renderer
+	switch {
+	case plain:
+		renderer = style.New(w, style.WithLevel(style.LevelNone))
+	case cfg.forceLevel != nil:
+		renderer = style.New(w, style.WithLevel(*cfg.forceLevel))
+	default:
+		renderer = style.New(w)
+	}
+
+	line := Render(segments, renderer)
 	if line == "" {
 		return nil
 	}
 
-	_, err = fmt.Fprintln(cmd.OutOrStdout(), line)
+	_, err = fmt.Fprintln(w, line)
 	return err
 }
 

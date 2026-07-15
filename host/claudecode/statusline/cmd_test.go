@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/dangernoodle-io/shesha/host/claudecode/statusline"
-	"github.com/muesli/termenv"
+	"github.com/dangernoodle-io/shesha/style"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -168,31 +168,31 @@ func TestCommand_NonEmptySegmentsRenderingToEmptyStringPrintsNothing(t *testing.
 	assert.Empty(t, out.String())
 }
 
-func TestCommand_WithForceProfileRendersColorOnNonTTYStdout(t *testing.T) {
+func TestCommand_WithForceLevelRendersColorOnNonTTYStdout(t *testing.T) {
 	provider := statusline.StatuslineProviderFunc(
 		func(context.Context, statusline.Payload, string) ([]statusline.Segment, error) {
 			return []statusline.Segment{{Text: "example", Color: "1"}}, nil
 		},
 	)
 
-	cmd := statusline.Command(provider, statusline.WithForceProfile(termenv.ANSI))
+	cmd := statusline.Command(provider, statusline.WithForceLevel(style.LevelBasic))
 	cmd.SetIn(strings.NewReader("{}"))
 
 	var out bytes.Buffer
 	cmd.SetOut(&out)
 
 	require.NoError(t, cmd.Execute())
-	assert.Contains(t, out.String(), "\x1b", "WithForceProfile must force ANSI escapes despite non-TTY stdout")
+	assert.Contains(t, out.String(), "\x1b", "WithForceLevel must force escapes despite non-TTY stdout")
 }
 
-func TestCommand_PlainFlagWinsOverForceProfile(t *testing.T) {
+func TestCommand_PlainFlagWinsOverForceLevel(t *testing.T) {
 	provider := statusline.StatuslineProviderFunc(
 		func(context.Context, statusline.Payload, string) ([]statusline.Segment, error) {
 			return []statusline.Segment{{Text: "example", Color: "1"}}, nil
 		},
 	)
 
-	cmd := statusline.Command(provider, statusline.WithForceProfile(termenv.TrueColor))
+	cmd := statusline.Command(provider, statusline.WithForceLevel(style.LevelTrueColor))
 	cmd.SetIn(strings.NewReader("{}"))
 	cmd.SetArgs([]string{"--plain"})
 
@@ -200,11 +200,11 @@ func TestCommand_PlainFlagWinsOverForceProfile(t *testing.T) {
 	cmd.SetOut(&out)
 
 	require.NoError(t, cmd.Execute())
-	assert.Equal(t, "example\n", out.String(), "--plain must win over WithForceProfile")
+	assert.Equal(t, "example\n", out.String(), "--plain must win over WithForceLevel")
 }
 
-func TestCommand_WithoutForceProfileKeepsAutoDetection(t *testing.T) {
-	// Pin termenv.EnvColorProfile()'s auto-detection deterministically:
+func TestCommand_WithoutForceLevelKeepsAutoDetection(t *testing.T) {
+	// Pin style.Detect's (termenv-backed) auto-detection deterministically:
 	// NO_COLOR is honored unconditionally, regardless of ambient
 	// CLICOLOR_FORCE or TTY state in the process running this test.
 	t.Setenv("NO_COLOR", "1")

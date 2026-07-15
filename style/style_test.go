@@ -50,6 +50,18 @@ func TestDetect_NonTerminalWriterIsLevelNone(t *testing.T) {
 	assert.Equal(t, style.LevelNone, got)
 }
 
+func TestDetect_CliColorForceUpgradesNonTerminalToLevelBasic(t *testing.T) {
+	// CLICOLOR_FORCE forces color even on a non-TTY writer, but termenv
+	// only ever forces up to ANSI (never 256/TrueColor) for a
+	// non-terminal writer — this exercises Detect's ANSI->LevelBasic
+	// mapping through the real termenv env-var contract, not a TTY.
+	t.Setenv("CLICOLOR_FORCE", "1")
+
+	got := style.Detect(&bytes.Buffer{})
+
+	assert.Equal(t, style.LevelBasic, got)
+}
+
 func TestRender_LevelNoneReturnsBareTextNoEscapes(t *testing.T) {
 	r := style.New(&bytes.Buffer{}, style.WithLevel(style.LevelNone))
 
