@@ -1,0 +1,17 @@
+// Package style is shesha's lib-agnostic seam over styled-terminal-text
+// rendering: a Renderer takes a Style (an optional hex/ANSI color plus
+// independent dim/bold flags) and a capability Level (none/basic/256/
+// truecolor) and produces the right escape sequence for that tier — or, at
+// LevelNone, the bare text with zero escapes. Callers never branch on color
+// support themselves; degradation is Render's job.
+//
+// New returns shesha's default implementation, backed by
+// github.com/muesli/termenv, which is confined to this package — no
+// termenv type appears in style's public API. A consumer may supply its
+// own Renderer if it needs a different styling library.
+//
+// Detect resolves a writer's capability tier (honoring NO_COLOR,
+// TERM=dumb, and whether the writer is actually a terminal) via termenv's
+// fd-aware detection; WithLevel forces a tier, bypassing detection, which
+// is how tests and --plain/--no-color flags get deterministic behavior.
+package style
